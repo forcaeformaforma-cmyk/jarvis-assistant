@@ -1,0 +1,47 @@
+# JARVIS-Assistant Configuration
+
+jarvis:
+  name: "JARVIS"
+  version: "1.0.0"
+  language: "pt-BR"
+  debug: false
+
+nlp:
+  enabled: true
+  model: "spacy-pt"
+  confidence_threshold: 0.6
+
+apis:
+  weather:
+    endpoint: "https://api.open-meteo.com/v1/forecast"
+    enabled: true
+  news:
+    endpoint: "https://newsapi.org/v2"
+    enabled: false
+    api_key: "${NEWS_API_KEY}"
+  github:
+    endpoint: "https://api.github.com"
+    enabled: true
+    token: "${GITHUB_TOKEN}"
+
+tasks:
+  auto_execute: false
+  execution_timeout: 300
+  max_concurrent_tasks: 5
+
+learning:
+  enabled: true
+  memory_path: "./data/memory.json"
+  knowledge_base_path: "./data/knowledge_base.json"
+  pattern_recognition: true
+
+web:
+  host: "localhost"
+  port: 5000
+  debug: false
+  cors_enabled: true
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/jarvis.log"

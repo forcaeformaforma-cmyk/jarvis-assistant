@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Config
+config/api_keys.yaml
+config/private_config.yaml
+
+# Logs
+logs/
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Data
+data/
+learning_data/
+
+# Environment variables
+.env
+.env.local
