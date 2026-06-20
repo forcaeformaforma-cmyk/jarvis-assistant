@@ -17,7 +17,7 @@ class NLPProcessor:
     
     # Dicionários de palavras-chave
     GREETING_KEYWORDS = ['oi', 'olá', 'opa', 'e aí', 'hey', 'bom dia', 'boa tarde', 'boa noite']
-    TASK_KEYWORDS = ['execute', 'faça', 'realize', 'crie', 'delete', 'modifique']
+    TASK_KEYWORDS = ['execute', 'faça', 'realize', 'crie', 'delete', 'modifique', 'backup', 'report', 'cleanup', 'monitor']
     API_KEYWORDS = ['consulte', 'busque', 'pesquise', 'api', 'busca']
     LEARN_KEYWORDS = ['aprenda', 'aprender', 'ensine', 'estude']
     HELP_KEYWORDS = ['ajuda', 'help', 'como', 'explique', 'o que']
@@ -43,7 +43,7 @@ class NLPProcessor:
         tokens = cleaned_input.split()
         
         intent, confidence = self._detect_intent(tokens, user_input_lower)
-        entities = self._extract_entities(tokens, user_input_lower)
+        entities = self._extract_entities(tokens, user_input_lower, intent)
         
         logger.debug(f"Parsed - Intent: {intent}, Confidence: {confidence}, Entities: {entities}")
         
@@ -64,7 +64,11 @@ class NLPProcessor:
         if any(keyword in tokens for keyword in self.GREETING_KEYWORDS):
             return 'greeting', 0.95
         
-        # Tarefa
+        # Ajuda
+        if any(keyword in tokens for keyword in self.HELP_KEYWORDS):
+            return 'help', 0.85
+        
+        # Tarefa - verifica palavras-chave de tarefa
         if any(keyword in tokens for keyword in self.TASK_KEYWORDS):
             return 'execute_task', 0.85
         
@@ -76,20 +80,17 @@ class NLPProcessor:
         if any(keyword in tokens for keyword in self.LEARN_KEYWORDS):
             return 'learn', 0.80
         
-        # Ajuda
-        if any(keyword in tokens for keyword in self.HELP_KEYWORDS):
-            return 'help', 0.85
-        
         # Padrão
         return 'unknown', 0.5
     
-    def _extract_entities(self, tokens: List[str], user_input: str) -> Dict[str, Any]:
+    def _extract_entities(self, tokens: List[str], user_input: str, intent: str) -> Dict[str, Any]:
         """
         Extrai entidades da entrada
         
         Args:
             tokens: Tokens da entrada
             user_input: Entrada original
+            intent: Intenção detectada
             
         Returns:
             Dicionário de entidades
@@ -99,6 +100,14 @@ class NLPProcessor:
             'raw_input': user_input,
             'length': len(tokens)
         }
+        
+        # Se é uma tarefa, extrai o nome da tarefa
+        if intent == 'execute_task':
+            available_tasks = ['backup', 'report', 'cleanup', 'monitor']
+            for task in available_tasks:
+                if task in tokens:
+                    entities['task'] = task
+                    break
         
         # Extrai números
         numbers = re.findall(r'\d+', user_input)
