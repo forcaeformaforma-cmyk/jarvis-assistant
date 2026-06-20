@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS-Assistant Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>🤖 JARVIS</h1>
+                <p>v1.0.0</p>
+            </div>
+            
+            <nav class="menu">
+                <a href="#" class="menu-item active" data-section="dashboard">
+                    <span class="icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item" data-section="chat">
+                    <span class="icon">💬</span>
+                    <span>Chat</span>
+                </a>
+                <a href="#" class="menu-item" data-section="tasks">
+                    <span class="icon">⚙️</span>
+                    <span>Tarefas</span>
+                </a>
+                <a href="#" class="menu-item" data-section="apis">
+                    <span class="icon">🔌</span>
+                    <span>APIs</span>
+                </a>
+                <a href="#" class="menu-item" data-section="memory">
+                    <span class="icon">🧠</span>
+                    <span>Memória</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot online"></span>
+                    <span id="status-text">Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- HEADER -->
+            <header class="header">
+                <h2 id="section-title">Dashboard</h2>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Buscar...">
+                    </div>
+                    <div class="user-info">
+                        <span>👤 Usuário</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- SECTIONS -->
+            <div class="content">
+                <!-- DASHBOARD SECTION -->
+                <section id="dashboard" class="section active">
+                    <div class="grid grid-3">
+                        <!-- STATUS CARD -->
+                        <div class="card card-status">
+                            <h3>📊 Status</h3>
+                            <div class="status-content">
+                                <div class="status-item">
+                                    <span>Nome:</span>
+                                    <strong id="status-name">JARVIS</strong>
+                                </div>
+                                <div class="status-item">
+                                    <span>Versão:</span>
+                                    <strong id="status-version">1.0.0</strong>
+                                </div>
+                                <div class="status-item">
+                                    <span>Status:</span>
+                                    <strong id="status-active">
+                                        <span class="badge online">Ativo</span>
+                                    </strong>
+                                </div>
+                                <div class="status-item">
+                                    <span>Conversas:</span>
+                                    <strong id="status-conversations">0</strong>
+                                </div>
+                                <div class="status-item">
+                                    <span>Memória:</span>
+                                    <strong id="status-memory">0 interações</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- QUICK ACTIONS -->
+                        <div class="card card-actions">
+                            <h3>⚡ Ações Rápidas</h3>
+                            <div class="quick-buttons">
+                                <button class="btn btn-small" onclick="executeTask('backup')">
+                                    📦 Backup
+                                </button>
+                                <button class="btn btn-small" onclick="executeTask('report')">
+                                    📄 Relatório
+                                </button>
+                                <button class="btn btn-small" onclick="executeTask('cleanup')">
+                                    🧹 Limpeza
+                                </button>
+                                <button class="btn btn-small" onclick="executeTask('monitor')">
+                                    🔍 Monitor
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- STATS -->
+                        <div class="card card-stats">
+                            <h3>📈 Estatísticas</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="stat-tasks">0</span>
+                                    <span class="stat-label">Tarefas</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="stat-apis">0</span>
+                                    <span class="stat-label">APIs</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="stat-patterns">0</span>
+                                    <span class="stat-label">Padrões</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHARTS -->
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3>📊 Atividade</h3>
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                        <div class="card">
+                            <h3>🎯 Intenções Detectadas</h3>
+                            <canvas id="intentChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- CHAT SECTION -->
+                <section id="chat" class="section">
+                    <div class="card card-chat">
+                        <h3>💬 Chat com JARVIS</h3>
+                        <div class="chat-container">
+                            <div id="chat-messages" class="chat-messages">
+                                <div class="message jarvis-message">
+                                    <div class="message-content">
+                                        Olá! Sou o JARVIS, seu assistente de IA. Como posso ajudá-lo?
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <form id="chat-form" onsubmit="sendMessage(event)">
+                                <input 
+                                    type="text" 
+                                    id="chat-input" 
+                                    placeholder="Digite sua mensagem..." 
+                                    autocomplete="off"
+                                >
+                                <button type="submit" class="btn btn-primary">Enviar</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TASKS SECTION -->
+                <section id="tasks" class="section">
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3>⚙️ Tarefas Disponíveis</h3>
+                            <div id="available-tasks" class="task-list">
+                                <!-- Carregado dinamicamente -->
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>📜 Histórico de Execução</h3>
+                            <div id="execution-history" class="execution-history">
+                                <!-- Carregado dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- APIS SECTION -->
+                <section id="apis" class="section">
+                    <div class="card">
+                        <h3>🔌 APIs Disponíveis</h3>
+                        <div id="available-apis" class="apis-list">
+                            <!-- Carregado dinamicamente -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MEMORY SECTION -->
+                <section id="memory" class="section">
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h3>🧠 Interações Recentes</h3>
+                            <div id="recent-interactions" class="interactions-list">
+                                <!-- Carregado dinamicamente -->
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h3>🎓 Padrões Aprendidos</h3>
+                            <div id="learned-patterns" class="patterns-list">
+                                <!-- Carregado dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
